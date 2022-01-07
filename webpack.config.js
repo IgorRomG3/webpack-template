@@ -2,14 +2,22 @@ const path = require('path');
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const PATHS = {
   src: path.join(__dirname, 'src/templates/views'),
 };
 const PAGES_DIR = PATHS.src;
-const PAGES = fs.readdirSync(PAGES_DIR).filter(fileName => fileName.endsWith('.pug'))
+const PAGES = fs.readdirSync(PAGES_DIR).filter(fileName => fileName.endsWith('.pug'));
+let mode = 'development';
+
+if (process.env.NODE_ENV == 'production') {
+  mode = 'production';
+}
+
+console.log(mode,'from webpack.config');
 
 module.exports = {
-  mode: 'development',
+  mode: mode,
   entry: {
     index: {
       import: './src/js/index.js',
@@ -17,7 +25,7 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   devServer: {
-    static: [path.resolve(__dirname, 'src/templates'), path.resolve(__dirname, 'dist')],
+    static: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'dist')],
     compress: true,
     port: 9000
   },
@@ -34,25 +42,48 @@ module.exports = {
         }
       },
       {
+        test: /\.s[ac]ss$/i,
+        use: [
+          mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
+          "css-loader",
+          "sass-loader",
+        ],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif|webp)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[hash][ext]'
+        }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[hash][ext]'
+        }
+      },
+      {
         test: /\.pug/,
         use: [
           {
-            loader: 'html-loader'
+            loader: 'html-loader',
           },
           {
             loader: 'pug-html-loader',
-            options: {
-              pretty: true
-            }
           }
         ]
       }
     ]
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'css/[name][contenthash].css'
+    }),
     ...PAGES.map(page => new HtmlWebpackPlugin ({
       template: `${PAGES_DIR}/${page}`,
-      filename: `./${page.replace(/\.pug/,'.html')}`
+      filename: `./${page.replace(/\.pug/,'.html')}`,
+      inject: 'body',
     })),
     new HtmlWebpackPugPlugin()
   ],
