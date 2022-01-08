@@ -3,6 +3,7 @@ const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const PATHS = {
@@ -98,7 +99,8 @@ module.exports = {
       filename: `./${page.replace(/\.pug/,'.html')}`,
       inject: 'body',
     })),
-    new HtmlWebpackPugPlugin()
+    new HtmlWebpackPugPlugin(),
+    new ESLintPlugin()
   ],
   output: {
     filename: 'js/[name].bundle.js',
