@@ -3,6 +3,8 @@ const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
 const PATHS = {
   src: path.join(__dirname, 'src/templates/views'),
 };
@@ -23,7 +25,7 @@ module.exports = {
       import: './src/js/index.js',
     },
   },
-  devtool: 'inline-source-map',
+  devtool: mode === 'development' ? 'inline-source-map' : false,
   devServer: {
     static: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'dist')],
     compress: true,
@@ -46,6 +48,17 @@ module.exports = {
         use: [
           mode === 'development' ? 'style-loader' : MiniCssExtractPlugin.loader,
           "css-loader",
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: [
+                  autoprefixer(),
+                  cssnano()
+                ],
+              },
+            }
+          },
           "sass-loader",
         ],
       },
