@@ -1,5 +1,5 @@
 import 'bootstrap'
-import { App } from './classes/App.js'
+import App from './classes/App'
 import '../sass/style.sass'
 
 const app = new App();

@@ -23,7 +23,7 @@ module.exports = {
   mode: mode,
   entry: {
     index: {
-      import: './src/js/index.js',
+      import: './src/js/index.ts',
     },
   },
   devtool: mode === 'development' ? 'inline-source-map' : false,
@@ -35,14 +35,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
+        test: /\.tsx?$/,
+        use: 'ts-loader',
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
       },
       {
         test: /\.s[ac]ss$/i,
@@ -102,6 +97,9 @@ module.exports = {
     new HtmlWebpackPugPlugin(),
     new ESLintPlugin()
   ],
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
   output: {
     filename: 'js/[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
