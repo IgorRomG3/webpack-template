@@ -1,5 +1,5 @@
 import { App } from './classes/App.js'
-import '../sass/style.sass'
+import '../scss/style.scss'
 
 const app = new App();
 app.init();
